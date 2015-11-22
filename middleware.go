@@ -3,9 +3,11 @@ package xrouter
 import (
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/rs/xhandler"
+	"github.com/rs/xlog"
 
 	"golang.org/x/net/context"
 )
@@ -42,4 +44,38 @@ func HttpHandler(c *xhandler.Chain, fs http.Handler) http.Handler {
 	return c.Handler(xhandler.HandlerFuncC(func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		fs.ServeHTTP(w, r)
 	}))
+}
+
+// LogHandler instantiates a new xlog HTTP handler using the given log.
+func LogHandler(l xlog.Logger) func(xhandler.HandlerC) xhandler.HandlerC {
+	return func(next xhandler.HandlerC) xhandler.HandlerC {
+		return xhandler.HandlerFuncC(func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+			ptw := passThroughResponseWriter{200, w}
+			ctx = xlog.NewContext(ctx, l)
+			start := time.Now()
+			next.ServeHTTPC(ctx, &ptw, r)
+			l.Info(http.StatusText(ptw.StatusCode), xlog.F{
+				"duration": time.Now().Sub(start).String(),
+				"status":   ptw.StatusCode,
+			})
+		})
+	}
+}
+
+type passThroughResponseWriter struct {
+	StatusCode     int
+	ResponseWriter http.ResponseWriter
+}
+
+func (p *passThroughResponseWriter) WriteHeader(code int) {
+	p.StatusCode = code
+	p.ResponseWriter.WriteHeader(code)
+}
+
+func (p *passThroughResponseWriter) Header() http.Header {
+	return p.ResponseWriter.Header()
+}
+
+func (p *passThroughResponseWriter) Write(data []byte) (int, error) {
+	return p.ResponseWriter.Write(data)
 }

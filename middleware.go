@@ -15,6 +15,14 @@ import (
 // ParamsKey is the key for xhandler contexts which grant access to the url params.
 const ParamsKey = "params"
 
+// Params returns a URL parameter by name
+func Param(ctx context.Context, key string) string {
+	if params, ok := ctx.Value(ParamsKey).(httprouter.Params); ok {
+		return params.ByName(key)
+	}
+	return ""
+}
+
 // httpParamsHandler is middleware which links xhandler and httprouter.
 func httpParamsHandler(chain *xhandler.Chain, handler xhandler.HandlerFuncC) httprouter.Handle {
 	h := chain.HandlerC(xhandler.HandlerFuncC(handler))

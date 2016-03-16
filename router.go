@@ -7,6 +7,7 @@ import (
 	"github.com/rs/xhandler"
 )
 
+// RouterGroup allows for grouping routes with separate middleware.
 type RouterGroup interface {
 
 	// Use adds middleware to the router.
@@ -37,6 +38,7 @@ type RouterGroup interface {
 	DELETE(path string, handler xhandler.HandlerFuncC)
 }
 
+// Router defines a root router for handling requests.
 type Router interface {
 	RouterGroup
 
@@ -45,6 +47,12 @@ type Router interface {
 
 	// StaticFiles adds a directory of static content to a specific path.
 	StaticFiles(path string, fs http.Handler)
+
+	// NotFound adds a handler for routes that don't exist.
+	NotFound(http.Handler)
+
+	// MethodNotAllowed handles requests in which the route exists but hte wrong method was used.
+	MethodNotAllowed(http.Handler)
 
 	// Handler returns an http.Handler
 	Handler() http.Handler
@@ -64,6 +72,16 @@ type router struct {
 // Use adds middleware to the router.
 func (r *router) Use(f func(next xhandler.HandlerC) xhandler.HandlerC) {
 	r.chain.UseC(f)
+}
+
+// NotFound adds a handler for unknown routes.
+func (r *router) NotFound(h http.Handler) {
+	r.router.NotFound = HttpHandler(r.chain, h)
+}
+
+// MethodNotAllowed adds a handler for existing routes and unknown methods.
+func (r *router) MethodNotAllowed(h http.Handler) {
+	r.router.MethodNotAllowed = HttpHandler(r.chain, h)
 }
 
 // GET adds a GET handler at the given path.

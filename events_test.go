@@ -12,6 +12,7 @@ func TestRouterEventHandler(t *testing.T) {
 	routes["GET /api/v1/settings"] = false
 	routes["GET /api/v1/group1/hello"] = false
 	routes["GET /api/v1/group1/group2/hello"] = false
+	routes["GET /api/v1/apps/:app/clients/users/:userid/info"] = false
 	routes["OPTIONS /api/v1/settings"] = false
 	routes["HEAD /api/v1/settings"] = false
 	routes["DELETE /api/v1/settings"] = false
@@ -26,6 +27,7 @@ func TestRouterEventHandler(t *testing.T) {
 		switch e := evt.(type) {
 		case AddHandlerEvent:
 			routes[e.Method+" "+e.Path] = true
+			// t.Logf("%s %s", e.Method, e.Path)
 		case NotFoundHandlerEvent:
 			routes["NotFound"] = true
 		case MethodNotAllowedHandlerEvent:
@@ -52,6 +54,10 @@ func TestRouterEventHandler(t *testing.T) {
 	// Create nested group and route
 	group2 := group1.Group("/group2")
 	group2.GET("/hello", GetTest)
+
+	appGroup := api.Group("/apps/:app")
+	clientGroup := appGroup.Group("/clients")
+	clientGroup.GET("/users/:userid/info", GetTest)
 
 	for k, v := range routes {
 		assert.True(t, v, "%s should be true", k)

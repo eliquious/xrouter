@@ -97,6 +97,10 @@ func (suite *RouterTestSuite) SetupSuite() {
 	group2 := group1.Group("/group2")
 	group2.GET("/hello", GetTest)
 
+	appGroup := api.Group("/apps/:app")
+	clientGroup := appGroup.Group("/clients")
+	clientGroup.GET("/users/:userid/info", GetTest)
+
 	suite.server = httptest.NewServer(suite.router.Handler())
 	url, _ := url.Parse(suite.server.URL)
 	suite.URL = url
@@ -113,6 +117,22 @@ func (suite *RouterTestSuite) TearDownSuite() {
 func (suite *RouterTestSuite) TestGet() {
 
 	res, err := http.Get(suite.server.URL)
+	if err != nil {
+		suite.Fail("GET request failed", err)
+	}
+
+	body, err := ioutil.ReadAll(res.Body)
+	res.Body.Close()
+	if err != nil {
+		suite.Fail("GET: failed to read response body", err)
+	}
+	suite.Equal(ResponseBody, string(body))
+	suite.Equal(http.StatusOK, res.StatusCode)
+}
+
+func (suite *RouterTestSuite) TestNestedGet() {
+
+	res, err := http.Get(suite.server.URL + "/api/v1/apps/1/clients/users/2/info")
 	if err != nil {
 		suite.Fail("GET request failed", err)
 	}

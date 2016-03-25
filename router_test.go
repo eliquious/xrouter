@@ -89,6 +89,14 @@ func (suite *RouterTestSuite) SetupSuite() {
 	api.PUT("/settings", PutTest)
 	api.PATCH("/settings", PatchTest)
 
+	// Create router group and handler
+	group1 := api.Group("/group1")
+	group1.GET("/hello", GetTest)
+
+	// Create nested group and route
+	group2 := group1.Group("/group2")
+	group2.GET("/hello", GetTest)
+
 	suite.server = httptest.NewServer(suite.router.Handler())
 	url, _ := url.Parse(suite.server.URL)
 	suite.URL = url

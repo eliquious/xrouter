@@ -1,6 +1,10 @@
 package xrouter
 
-import "github.com/rs/xhandler"
+import (
+	"path/filepath"
+
+	"github.com/rs/xhandler"
+)
 
 func newGroup(prefix string, chain *xhandler.Chain, r RouterGroup) RouterGroup {
 	ch := xhandler.Chain{}
@@ -59,4 +63,8 @@ func (r *routerGroup) DELETE(path string, handler xhandler.HandlerFuncC) {
 // Group returns a new router which strips the given path before the request is handled. All the middleware from the router is transferred.
 func (r *routerGroup) Group(path string) RouterGroup {
 	return newGroup(path, r.chain, r)
+}
+
+func (r *routerGroup) Path() string {
+	return filepath.Clean(r.router.Path() + r.prefix)
 }

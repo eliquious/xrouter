@@ -31,23 +31,8 @@ func httpParamsHandler(chain *xhandler.Chain, handler xhandler.HandlerFuncC) htt
 	}
 }
 
-// // httpParamsHandler is middleware which links xhandler and httprouter.
-// func stripPrefixHandler(prefix string, handler xhandler.HandlerFuncC) xhandler.HandlerFuncC {
-// 	if prefix == "" {
-// 		return handler
-// 	}
-// 	return xhandler.HandlerFuncC(func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-// 		if p := strings.TrimPrefix(r.URL.Path, prefix); len(p) < len(r.URL.Path) {
-// 			r.URL.Path = p
-// 			handler.ServeHTTPC(ctx, w, r)
-// 		} else {
-// 			http.NotFound(w, r)
-// 		}
-// 	})
-// }
-
-// HttpHandler wraps a raw http.Handler in chain middleware.
-func HttpHandler(c *xhandler.Chain, fs http.Handler) http.Handler {
+// HTTPHandler wraps a raw http.Handler in chain middleware.
+func HTTPHandler(c *xhandler.Chain, fs http.Handler) http.Handler {
 	return c.Handler(xhandler.HandlerFuncC(func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		fs.ServeHTTP(w, r)
 	}))

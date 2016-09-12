@@ -39,14 +39,13 @@ func HTTPHandler(c *xhandler.Chain, fs http.Handler) http.Handler {
 }
 
 // LogHandler instantiates a new xlog HTTP handler using the given log.
-func LogHandler(l xlog.Logger) func(xhandler.HandlerC) xhandler.HandlerC {
+func LogHandler() func(xhandler.HandlerC) xhandler.HandlerC {
 	return func(next xhandler.HandlerC) xhandler.HandlerC {
 		return xhandler.HandlerFuncC(func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 			ptw := passThroughResponseWriter{200, w}
-			ctx = xlog.NewContext(ctx, l)
 			start := time.Now()
 			next.ServeHTTPC(ctx, &ptw, r)
-			l.Info(http.StatusText(ptw.StatusCode), xlog.F{
+			xlog.FromContext(ctx).Info(http.StatusText(ptw.StatusCode), xlog.F{
 				"duration": time.Now().Sub(start).String(),
 				"status":   ptw.StatusCode,
 			})

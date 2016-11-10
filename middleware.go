@@ -5,13 +5,13 @@ import (
 	"time"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/rs/xhandler"
+	"github.com/justinas/alice"
 	"github.com/rs/xlog"
 
 	"golang.org/x/net/context"
 )
 
-// ParamsKey is the key for xhandler contexts which grant access to the url params.
+// ParamsKey is the key for contexts which grant access to the url params.
 const ParamsKey = "params"
 
 // Param returns a URL parameter by name
@@ -22,30 +22,28 @@ func Param(ctx context.Context, key string) string {
 	return ""
 }
 
-// httpParamsHandler is middleware which links xhandler and httprouter.
-func httpParamsHandler(chain *xhandler.Chain, handler xhandler.HandlerFuncC) httprouter.Handle {
-	h := chain.HandlerC(xhandler.HandlerFuncC(handler))
+// httpParamsHandler is middleware which links the middleware and httprouter.
+func httpParamsHandler(chain alice.Chain, handler Route) httprouter.Handle {
+	h := wrapper(chain, handler)
 	return func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
-		ctx := context.WithValue(context.Background(), ParamsKey, params)
-		h.ServeHTTPC(ctx, w, req)
+		req.WithContext(context.WithValue(req.Context(), ParamsKey, params))
+		h.ServeHTTP(w, req)
 	}
 }
 
 // HTTPHandler wraps a raw http.Handler in chain middleware.
-func HTTPHandler(c *xhandler.Chain, fs http.Handler) http.Handler {
-	return c.Handler(xhandler.HandlerFuncC(func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-		fs.ServeHTTP(w, r)
-	}))
+func HTTPHandler(c alice.Chain, fs http.Handler) http.Handler {
+	return c.Then(fs)
 }
 
 // LogHandler instantiates a new xlog HTTP handler using the given log.
-func LogHandler() func(xhandler.HandlerC) xhandler.HandlerC {
-	return func(next xhandler.HandlerC) xhandler.HandlerC {
-		return xhandler.HandlerFuncC(func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+func LogHandler() func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ptw := passThroughResponseWriter{200, w}
 			start := time.Now()
-			next.ServeHTTPC(ctx, &ptw, r)
-			xlog.FromContext(ctx).Info(http.StatusText(ptw.StatusCode), xlog.F{
+			next.ServeHTTP(&ptw, r)
+			xlog.FromContext(r.Context()).Info(http.StatusText(ptw.StatusCode), xlog.F{
 				"duration": time.Now().Sub(start).String(),
 				"status":   ptw.StatusCode,
 			})

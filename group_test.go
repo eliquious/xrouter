@@ -11,7 +11,6 @@ import (
 
 func TestRouterGroupPath(t *testing.T) {
 	r := New()
-	assert.Equal(t, "/", r.Path(), "Router has wrong root path")
 
 	api := r.Group("/api/v1")
 	assert.Equal(t, "/api/v1", api.Path(), "API has wrong path")

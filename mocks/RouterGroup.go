@@ -3,14 +3,14 @@ package mocks
 import "github.com/eliquious/xrouter"
 import "github.com/stretchr/testify/mock"
 
-import "github.com/rs/xhandler"
+import "net/http"
 
 type RouterGroup struct {
 	mock.Mock
 }
 
 // Use provides a mock function with given fields: f
-func (_m *RouterGroup) Use(f func(xhandler.HandlerC) xhandler.HandlerC) {
+func (_m *RouterGroup) Use(f func(http.Handler) http.Handler) {
 	_m.Called(f)
 }
 
@@ -43,36 +43,36 @@ func (_m *RouterGroup) Path() string {
 }
 
 // GET provides a mock function with given fields: path, handler
-func (_m *RouterGroup) GET(path string, handler xhandler.HandlerFuncC) {
+func (_m *RouterGroup) GET(path string, handler xrouter.Route) {
 	_m.Called(path, handler)
 }
 
 // POST provides a mock function with given fields: path, handler
-func (_m *RouterGroup) POST(path string, handler xhandler.HandlerFuncC) {
+func (_m *RouterGroup) POST(path string, handler xrouter.Route) {
 	_m.Called(path, handler)
 }
 
 // PUT provides a mock function with given fields: path, handler
-func (_m *RouterGroup) PUT(path string, handler xhandler.HandlerFuncC) {
+func (_m *RouterGroup) PUT(path string, handler xrouter.Route) {
 	_m.Called(path, handler)
 }
 
 // OPTIONS provides a mock function with given fields: path, handler
-func (_m *RouterGroup) OPTIONS(path string, handler xhandler.HandlerFuncC) {
+func (_m *RouterGroup) OPTIONS(path string, handler xrouter.Route) {
 	_m.Called(path, handler)
 }
 
 // HEAD provides a mock function with given fields: path, handler
-func (_m *RouterGroup) HEAD(path string, handler xhandler.HandlerFuncC) {
+func (_m *RouterGroup) HEAD(path string, handler xrouter.Route) {
 	_m.Called(path, handler)
 }
 
 // PATCH provides a mock function with given fields: path, handler
-func (_m *RouterGroup) PATCH(path string, handler xhandler.HandlerFuncC) {
+func (_m *RouterGroup) PATCH(path string, handler xrouter.Route) {
 	_m.Called(path, handler)
 }
 
 // DELETE provides a mock function with given fields: path, handler
-func (_m *RouterGroup) DELETE(path string, handler xhandler.HandlerFuncC) {
+func (_m *RouterGroup) DELETE(path string, handler xrouter.Route) {
 	_m.Called(path, handler)
 }

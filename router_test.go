@@ -8,8 +8,9 @@ import (
 	"strings"
 	"testing"
 
+	"context"
+
 	"github.com/stretchr/testify/suite"
-	"golang.org/x/net/context"
 )
 
 const ResponseBody = "Hello, World!"

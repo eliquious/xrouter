@@ -26,7 +26,7 @@ func Param(ctx context.Context, key string) string {
 func httpParamsHandler(chain alice.Chain, handler Route) httprouter.Handle {
 	h := wrapper(chain, handler)
 	return func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
-		req.WithContext(context.WithValue(req.Context(), ParamsKey, params))
+		req = req.WithContext(context.WithValue(req.Context(), ParamsKey, params))
 		h.ServeHTTP(w, req)
 	}
 }

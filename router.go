@@ -87,7 +87,7 @@ type router struct {
 
 // Use adds middleware to the router.
 func (r *router) Use(f func(next http.Handler) http.Handler) {
-	r.group.chain.Append(f)
+	r.group.Use(f)
 }
 
 // NotFound adds a handler for unknown routes.

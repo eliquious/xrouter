@@ -27,7 +27,7 @@ type routerGroup struct {
 
 // Use adds middleware to the router.
 func (r *routerGroup) Use(f func(next http.Handler) http.Handler) {
-	r.chain.Append(f)
+	r.chain = r.chain.Append(f)
 }
 
 // GET adds a GET handler at the given path.

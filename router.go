@@ -92,13 +92,13 @@ func (r *router) Use(f func(next http.Handler) http.Handler) {
 
 // NotFound adds a handler for unknown routes.
 func (r *router) NotFound(h http.Handler) {
-	r.router.NotFound = r.group.chain.Then(h).ServeHTTP
+	r.router.NotFound = r.group.chain.Then(h)
 	r.group.evtHandler(NotFoundHandlerEvent{})
 }
 
 // MethodNotAllowed adds a handler for existing routes and unknown methods.
 func (r *router) MethodNotAllowed(h http.Handler) {
-	r.router.MethodNotAllowed = r.group.chain.Then(h).ServeHTTP
+	r.router.MethodNotAllowed = r.group.chain.Then(h)
 	r.group.evtHandler(MethodNotAllowedHandlerEvent{})
 }
 
@@ -139,7 +139,7 @@ func (r *router) DELETE(path string, handler Route) {
 
 // StaticRoot adds a directory of static content to serve at root. All requests not matched to a route will be handled here. It is an alias to the NotFound method.
 func (r *router) StaticRoot(fs http.Handler) {
-	r.router.NotFound = r.group.chain.Then(fs).ServeHTTP
+	r.router.NotFound = r.group.chain.Then(fs)
 }
 
 // StaticFiles adds a directory of static content to a specific path.

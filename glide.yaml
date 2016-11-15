@@ -1,7 +1,7 @@
 package: github.com/eliquious/xrouter
 import:
 - package: github.com/julienschmidt/httprouter
-  version: ^1.1.0
+  version: 4563b0ba73e4db6c6423b60a26f3cadd2e9a1ec9
 - package: github.com/rs/xlog
   version: 65f56f4e59a609f0ab40ebc3251b19402668470a
 - package: github.com/stretchr/testify

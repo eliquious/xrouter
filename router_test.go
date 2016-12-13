@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"context"
+	"golang.org/x/net/context"
 
 	"github.com/stretchr/testify/suite"
 )

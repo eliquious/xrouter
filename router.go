@@ -1,8 +1,9 @@
 package xrouter
 
 import (
-	"context"
 	"net/http"
+
+	"golang.org/x/net/context"
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/justinas/alice"

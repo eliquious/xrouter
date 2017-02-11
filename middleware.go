@@ -1,6 +1,8 @@
 package xrouter
 
 import (
+	"bufio"
+	"net"
 	"net/http"
 	"time"
 
@@ -67,4 +69,8 @@ func (p *passThroughResponseWriter) Header() http.Header {
 
 func (p *passThroughResponseWriter) Write(data []byte) (int, error) {
 	return p.ResponseWriter.Write(data)
+}
+
+func (p *passThroughResponseWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
+	return p.ResponseWriter.(http.Hijacker).Hijack()
 }

@@ -14,6 +14,9 @@ type RouterGroup interface {
 	// Use adds middleware to the router.
 	Use(f func(next http.Handler) http.Handler)
 
+	// Chain returns the middleware chain.
+	Chain() alice.Chain
+	
 	// Group returns a new router which strips the given path before the request is handled. All middleware is transferred to the child group.
 	Group(path string) RouterGroup
 
@@ -88,6 +91,11 @@ type router struct {
 // Use adds middleware to the router.
 func (r *router) Use(f func(next http.Handler) http.Handler) {
 	r.group.Use(f)
+}
+
+// Chain returns the middleware chain.
+func (r *router) Chain() alice.Chain {
+	return r.group.Chain()
 }
 
 // NotFound adds a handler for unknown routes.

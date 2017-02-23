@@ -30,6 +30,11 @@ func (r *routerGroup) Use(f func(next http.Handler) http.Handler) {
 	r.chain = r.chain.Append(f)
 }
 
+// Chain gets the middleware chain.
+func (r *routerGroup) Chain() alice.Chain {
+	return r.chain
+}
+
 // GET adds a GET handler at the given path.
 func (r *routerGroup) GET(path string, handler Route) {
 	r.router.GET(r.prefix+path, httpParamsHandler(r.chain, handler))

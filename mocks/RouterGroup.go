@@ -5,6 +5,8 @@ import "github.com/stretchr/testify/mock"
 
 import "net/http"
 
+import "github.com/justinas/alice"
+
 type RouterGroup struct {
 	mock.Mock
 }
@@ -12,6 +14,20 @@ type RouterGroup struct {
 // Use provides a mock function with given fields: f
 func (_m *RouterGroup) Use(f func(http.Handler) http.Handler) {
 	_m.Called(f)
+}
+
+// Chain provides a mock function with given fields:
+func (_m *RouterGroup) Chain() alice.Chain {
+	ret := _m.Called()
+
+	var r0 alice.Chain
+	if rf, ok := ret.Get(0).(func() alice.Chain); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Get(0).(alice.Chain)
+	}
+
+	return r0
 }
 
 // Group provides a mock function with given fields: path
